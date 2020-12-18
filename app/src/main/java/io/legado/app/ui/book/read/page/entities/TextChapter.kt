@@ -1,5 +1,6 @@
 package io.legado.app.ui.book.read.page.entities
 
+import android.text.TextPaint
 import kotlin.math.min
 
 data class TextChapter(
@@ -7,17 +8,24 @@ data class TextChapter(
     val title: String,
     val url: String,
     val pages: List<TextPage>,
-    val pageLines: List<Int>,
-    val pageLengths: List<Int>,
-    val chaptersSize: Int
+    val chaptersSize: Int,
+    var titlePaint: TextPaint? = null,
+    var contentPaint: TextPaint? = null
 ) {
+
     fun page(index: Int): TextPage? {
         return pages.getOrNull(index)
+    }
+
+    fun getPageByReadPos(readPos: Int): TextPage? {
+        return page(getPageIndexByCharIndex(readPos))
     }
 
     val lastPage: TextPage? get() = pages.lastOrNull()
 
     val lastIndex: Int get() = pages.lastIndex
+
+    val lastReadLength: Int get() = getReadLength(lastIndex)
 
     val pageSize: Int get() = pages.size
 
@@ -29,9 +37,13 @@ data class TextChapter(
         var length = 0
         val maxIndex = min(pageIndex, pages.size)
         for (index in 0 until maxIndex) {
-            length += pageLengths[index]
+            length += pages[index].charSize
         }
         return length
+    }
+
+    fun getNextPageLength(length: Int): Int {
+        return getReadLength(getPageIndexByCharIndex(length) + 1)
     }
 
     fun getUnRead(pageIndex: Int): String {
@@ -50,5 +62,16 @@ data class TextChapter(
             stringBuilder.append(it.text)
         }
         return stringBuilder.toString()
+    }
+
+    fun getPageIndexByCharIndex(charIndex: Int): Int {
+        var length = 0
+        pages.forEach {
+            length += it.charSize
+            if (length > charIndex) {
+                return it.index
+            }
+        }
+        return pages.lastIndex
     }
 }

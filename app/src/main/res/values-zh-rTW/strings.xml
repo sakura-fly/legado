@@ -10,6 +10,8 @@
     <string name="menu_import_old">匯入閱讀資料</string>
     <string name="mkdirs">建立子資料夾</string>
     <string name="mkdirs_description">建立legado資料夾作為備份資料夾</string>
+    <string name="webdav_cache_backup">離線快取書籍備份</string>
+    <string name="webdav_cache_backup_s">匯出本機同時備份到legado資料夾下exports目錄</string>
     <string name="backup_path">備份路徑</string>
     <string name="menu_import_old_version">匯入舊版資料</string>
     <string name="menu_import_github">匯入Github資料</string>
@@ -43,7 +45,7 @@
     <string name="recent_reading">最近閱讀</string>
     <string name="last_read">最後閱讀</string>
     <string name="update_log">更新日誌</string>
-    <string name="bookshelf_empty">書架還空著，先去添加吧！</string>
+    <string name="bookshelf_empty">書架還空著，先去搜尋書籍或從發現裡添加吧！\n如果初次使用請先關注公眾號[开源阅读]獲取書源！</string>
     <string name="action_search">搜尋</string>
     <string name="action_download">下載</string>
     <string name="layout_list">列表</string>
@@ -54,7 +56,7 @@
     <string name="bookshelf_layout">書架布局</string>
     <string name="view">檢視</string>
     <string name="book_library">書城</string>
-    <string name="book_local">添加本機</string>
+    <string name="book_local">新增本機</string>
     <string name="book_source">書源</string>
     <string name="book_source_manage">書源管理</string>
     <string name="book_source_manage_desc">建立/匯入/編輯/管理書源</string>
@@ -80,12 +82,12 @@
     <string name="is_loading">載入中…</string>
     <string name="retry">重試</string>
     <string name="web_service">Web 服務</string>
-    <string name="web_service_desc">啟用Web服務</string>
+    <string name="web_service_desc">瀏覽器寫源,看書</string>
     <string name="web_edit_source">web編輯書源</string>
     <string name="http_ip">http://%1$s:%2$d</string>
-    <string name="offline_cache">離線緩存</string>
-    <string name="offline_cache_t">離線緩存</string>
-    <string name="offline_cache_s">緩存選擇的章節到本機</string>
+    <string name="offline_cache">離線快取</string>
+    <string name="offline_cache_t">離線快取</string>
+    <string name="offline_cache_s">快取選擇的章節到本機</string>
     <string name="change_origin">換源</string>
     <string name="about_description">
         \u3000\u3000這是一款使用Kotlin全新開發的開源的閱讀軟體，歡迎您的加入。關注公眾號[legado-top]！
@@ -95,7 +97,7 @@
     </string>
     <string name="version_name">Version %s</string>
     <string name="pt_background_verification">後臺校驗書源</string>
-    <string name="ps_background_verification">打開后可以在校驗書源時自由操作</string>
+    <string name="ps_background_verification">打開後可以在校驗書源時自由操作</string>
     <string name="pt_auto_refresh">自動重新整理</string>
     <string name="ps_auto_refresh">打開軟體時自動更新書籍</string>
     <string name="pt_auto_download">自動下載最新章節</string>
@@ -148,6 +150,7 @@
     <string name="set_timer">定時</string>
     <string name="read_aloud_pause">朗讀暫停</string>
     <string name="read_aloud_timer">正在朗讀(還剩%d分鐘)</string>
+    <string name="playing_timer">正在朗播放(還剩%d分鐘)</string>
     <string name="ps_hide_navigation_bar">閱讀介面隱藏虛擬按鍵</string>
     <string name="pt_hide_navigation_bar">隱藏導航欄</string>
     <string name="re_navigation_bar_color">導航欄顏色</string>
@@ -157,8 +160,8 @@
     <string name="can_not_open">無法打開</string>
     <string name="can_not_share">分享失敗</string>
     <string name="no_chapter">無章節</string>
-    <string name="add_url">添加網址</string>
-    <string name="add_book_url">添加書籍網址</string>
+    <string name="add_url">新增網址</string>
+    <string name="add_book_url">新增書籍網址</string>
     <string name="background">背景</string>
     <string name="author">作者</string>
     <string name="author_show">作者: %s</string>
@@ -171,7 +174,7 @@
     <string name="disable_book_source">禁用書源</string>
     <string name="add_book_source">建立書源</string>
     <string name="add_rss_source">建立訂閱源</string>
-    <string name="book_file_selector">添加書籍</string>
+    <string name="book_file_selector">新增書籍</string>
     <string name="scan_book_source">掃描</string>
     <string name="copy_source">複製源</string>
     <string name="paste_source">貼上源</string>
@@ -183,7 +186,7 @@
     <string name="share">分享</string>
     <string name="share_app">軟體分享</string>
     <string name="flow_sys">跟隨系統</string>
-    <string name="add">添加</string>
+    <string name="add">新增</string>
     <string name="import_book_source">匯入書源</string>
     <string name="import_book_source_local">本機匯入</string>
     <string name="import_book_source_on_line">網路匯入</string>
@@ -195,8 +198,8 @@
     <string name="book">書</string>
     <string name="volume_key_page">音量鍵翻頁</string>
     <string name="click_turn_page">點擊翻頁</string>
-    <string name="click_all_next_page">點擊總是翻下一頁</string>
     <string name="page_anim">翻頁動畫</string>
+    <string name="book_page_anim">翻頁動畫(本書)</string>
     <string name="keep_light">螢幕超時</string>
     <string name="back">返回</string>
     <string name="menu">選單</string>
@@ -291,7 +294,7 @@
     <string name="padding_right">右邊距</string>
     <string name="check_book_source">校驗書源</string>
     <string name="check_select_source">校驗所選</string>
-    <string name="progress_show">進度 %1$d/%2$d</string>
+    <string name="progress_show">%1$s      進度 %2$d/%3$d</string>
     <string name="tts_fix">請安裝並選擇中文TTS!</string>
     <string name="tts_init_failed">TTS初始化失敗!</string>
     <string name="jf_convert">簡繁轉換</string>
@@ -346,7 +349,7 @@
     <string name="sort">排序</string>
     <string name="sort_auto">智慧排序</string>
     <string name="sort_manual">手動排序</string>
-    <string name="sort_pin_yin">拼音排序</string>
+    <string name="sort_name">名稱排序</string>
     <string name="go_to_top">滾動到頂部</string>
     <string name="go_to_bottom">滾動到底部</string>
     <string name="read_y">已讀: %s</string>
@@ -359,8 +362,8 @@
     <string name="finish_book">完結書籍</string>
     <string name="local_book">本機書籍</string>
     <string name="status_bar_immersion">狀態欄顏色透明</string>
-    <string name="navigation_bar_color_change">導航欄變色</string>
-    <string name="navigation_bar_color_change_s">導航欄根據夜間模式變化</string>
+    <string name="imm_navigation_bar">沉浸式導航欄</string>
+    <string name="imm_navigation_bar_s">導航欄顏色透明</string>
     <string name="add_to_shelf">放入書架</string>
     <string name="continue_read">繼續閱讀</string>
     <string name="cover_path">封面地址</string>
@@ -402,6 +405,7 @@
     <string name="book_url_pattern">書籍URL正則(bookUrlPattern)</string>
     <string name="rule_book_info_init">預處理規則(bookInfoInit)</string>
     <string name="rule_toc_url">目錄URL規則(tocUrl)</string>
+    <string name="rule_can_re_name">允許修改書名作者(canReName)</string>
     <string name="rule_next_toc_url">目錄下一頁規則(nextTocUrl)</string>
     <string name="rule_chapter_list">目錄列表規則(chapterList)</string>
     <string name="rule_chapter_name">章節名稱規則(ChapterName)</string>
@@ -410,7 +414,7 @@
     <string name="rule_update_time">更新時間(ChapterInfo)</string>
     <string name="rule_book_content">正文規則(content)</string>
     <string name="rule_next_content">正文下一頁URL規則(nextContentUrl)</string>
-    <string name="rule_web_js">webJs</string>
+    <string name="rule_web_js">WebViewJs(webJs)</string>
     <string name="rule_source_regex">資源正則(sourceRegex)</string>
 
     <string name="source_icon">圖示(sourceIcon)</string>
@@ -482,7 +486,7 @@
     <string name="no_book_name">未獲取到書名</string>
     <string name="input_replace_url">輸入取代規則網址</string>
     <string name="get_book_list_success">搜尋列表獲取成功%d</string>
-    <string name="non_null_source_name_url">書源名稱和URL不能為空</string>
+    <string name="non_null_name_url">名稱和URL不能為空</string>
     <string name="gallery">圖庫</string>
     <string name="get_ali_pay_hb">領支付寶紅包</string>
     <string name="non_update_url">沒有獲取到更新地址</string>
@@ -567,6 +571,7 @@
     <string name="export_selection">匯出所選</string>
     <string name="export">匯出</string>
     <string name="load_toc">載入目錄</string>
+    <string name="load_info">載入詳情頁</string>
     <string name="tts">TTS</string>
     <string name="web_dav_pw">WebDav 密碼</string>
     <string name="web_dav_pw_s">輸入你的WebDav授權密碼</string>
@@ -590,8 +595,6 @@
     <string name="change_cover_source">封面換源</string>
     <string name="select_local_image">選擇本機圖片</string>
     <string name="book_type">類型:</string>
-    <string name="book_type_text">文字</string>
-    <string name="book_type_audio">音訊</string>
     <string name="to_backstage">後台</string>
     <string name="importing">正在匯入</string>
     <string name="exporting">正在匯出</string>
@@ -616,7 +619,8 @@
     <string name="service_start">正在啟動服務\n具體訊息查看通知欄</string>
     <string name="default_path">預設路徑</string>
     <string name="sys_folder_picker">系統資料夾選擇器</string>
-    <string name="app_folder_picker">自帶選擇器\n(Android10以上因權限限制可能無法使用)</string>
+    <string name="app_folder_picker">自帶資料夾選擇器</string>
+    <string name="app_file_picker">自帶資料夾選擇器</string>
     <string name="a10_permission_toast">Android10以上因權限限制可能無法讀寫文件</string>
     <string name="add_to_text_context_menu_s">長按文字在操作選單中顯示閱讀·搜尋</string>
     <string name="add_to_text_context_menu_t">文字操作顯示搜尋</string>
@@ -678,8 +682,6 @@
     <string name="click_to_apply">點擊加入</string>
     <string name="middle">中</string>
     <string name="information">訊息</string>
-    <string name="hideHeader">隱藏頁首</string>
-    <string name="hideFooter">隱藏頁尾</string>
     <string name="switchLayout">切換布局</string>
   
     <!--color-->
@@ -713,7 +715,7 @@
     <string name="already_in_download">該書已在下載列表</string>
     <string name="click_to_open">點擊打開</string>
     <string name="follow_public_account_summary">關注[legado-top]點擊廣告支持我</string>
-    <string name="weChat_appreciation_code">微信贊賞碼</string>
+    <string name="weChat_appreciation_code">微信讚賞碼</string>
     <string name="alipay">支付寶</string>
     <string name="alipay_red_envelope_search_code">支付寶紅包搜尋碼</string>
     <string name="alipay_red_envelope_copy">537954522 點擊複製</string>
@@ -730,7 +732,6 @@
     <string name="rule_replace_regex">取代規則(replaceRegex)</string>
     <string name="group_name">分組名稱</string>
     <string name="note_content">備註內容</string>
-    <string name="e_ink_change_bg">E-Ink模式下只有白紙黑字,不顯示其它背景</string>
     <string name="replace_enable_default_t">預設啟用取代淨化</string>
     <string name="replace_enable_default_s">新加入書架的書是否啟用取代淨化</string>
     <string name="select_restore_file">選擇復原文件</string>
@@ -754,17 +755,43 @@
     <string name="all_read_time">總閱讀時間</string>
     <string name="un_select_all">全不選</string>
     <string name="delete_all">刪除所有</string>
-    <string name="import_str">导入</string>
-    <string name="export_str">导出</string>
-    <string name="save_theme_config">保存主题配置</string>
-    <string name="save_day_theme_summary">保存白天主题配置以共调用和分享</string>
-    <string name="save_night_theme_summary">保存夜间主题配置以共调用和分享</string>
-    <string name="theme_list">主题列表</string>
-    <string name="theme_list_summary">使用保存主题,导入,分享主题</string>
-    <string name="select_theme">切換默認主題</string>
-    <string name="share_selected_source">分享選中書源</string>
-    <string name="sort_by_lastUppdateTime">時間排序</string>
-    <string name="search_content">搜索</string>
-
+    <string name="import_str">匯入</string>
+    <string name="export_str">匯出</string>
+    <string name="save_theme_config">儲存主題配置</string>
+    <string name="save_day_theme_summary">儲存白天主題配置以供呼叫和分享</string>
+    <string name="save_night_theme_summary">儲存夜間主題配置以供呼叫和分享</string>
+    <string name="theme_list">主題列表</string>
+    <string name="theme_list_summary">使用儲存主題,匯入,分享主題</string>
+    <string name="select_theme">切換預設主題</string>
+    <string name="share_selected_source">分享選中源</string>
+    <string name="sort_by_lastUpdateTime">時間排序</string>
+    <string name="search_content">全文搜尋</string>
+    <string name="rss_source_empty">關注公眾號[开源阅读]獲取訂閱源!</string>
+    <string name="explore_empty">目前沒有發現源,關注公眾號[开源阅读]添加包含發現的書源!</string>
+    <string name="page_key_set_help">將焦點放到輸入框按下物理按鍵會自動輸入鍵值,多個按鍵會自動用英文逗號隔開.</string>
+    <string name="theme_name">主題名稱</string>
+    <string name="auto_clear_expired">自動清除過期搜尋資料</string>
+    <string name="auto_clear_expired_summary">超過一天的搜尋資料</string>
+    <string name="re_segment">重新分段</string>
+    <string name="style_name">樣式名稱:</string>
+    <string name="empty_msg_import_book">點擊右上角資料夾圖示,選擇資料夾</string>
+    <string name="scan_folder">智慧掃描</string>
+    <string name="copy_url">複製URL</string>
+    <string name="no_book">沒有書籍</string>
+    <string name="keep_original_name">保留原名</string>
+    <string name="click_regional_config">點擊區域設定</string>
+    <string name="colse">關閉</string>
+    <string name="next_page">下一頁</string>
+    <string name="prev_page">上一頁</string>
+    <string name="non_action">無操作</string>
+    <string name="body_title">正文標題</string>
+    <string name="show_hide">顯示/隱藏</string>
+    <string name="header_footer">頁首<![CDATA[&]]>頁尾</string>
+    <string name="rule_subscription">規則訂閱</string>
+    <string name="rule_sub_empty_msg">添加大佬們提供的規則匯入地址\n添加後點擊可匯入規則</string>
+    <string name="get_book_progress">拉取雲端進度</string>
+    <string name="current_progress_exceeds_cloud">目前進度超過雲端進度,是否同步?</string>
+    <string name="sync_book_progress_t">同步閱讀進度</string>
+    <string name="sync_book_progress_s">進入退出閱讀介面時同步閱讀進度</string>
 
 </resources>

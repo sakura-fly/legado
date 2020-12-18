@@ -5,8 +5,6 @@ import io.legado.app.data.entities.RssSource
 import io.legado.app.help.coroutine.Coroutine
 import io.legado.app.model.analyzeRule.AnalyzeRule
 import io.legado.app.model.analyzeRule.AnalyzeUrl
-import io.legado.app.model.rss.Result
-import io.legado.app.model.rss.RssParserByRule
 import io.legado.app.utils.NetworkUtils
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -21,14 +19,14 @@ object Rss {
         page: Int,
         scope: CoroutineScope = Coroutine.DEFAULT,
         context: CoroutineContext = Dispatchers.IO
-    ): Coroutine<Result> {
+    ): Coroutine<RssResult> {
         return Coroutine.async(scope, context) {
             val analyzeUrl = AnalyzeUrl(
                 sortUrl,
                 page = page,
                 headerMapF = rssSource.getHeaderMap()
             )
-            val body = analyzeUrl.getResponseAwait(rssSource.sourceUrl).body
+            val body = analyzeUrl.getStrResponse(rssSource.sourceUrl).body
             RssParserByRule.parseXML(sortName, sortUrl, body, rssSource)
         }
     }
@@ -44,13 +42,11 @@ object Rss {
             val body = AnalyzeUrl(
                 rssArticle.link, baseUrl = rssArticle.origin,
                 headerMapF = rssSource?.getHeaderMap()
-            ).getResponseAwait(rssArticle.origin)
+            ).getStrResponse(rssArticle.origin)
                 .body
             val analyzeRule = AnalyzeRule()
-            analyzeRule.setContent(
-                body,
-                NetworkUtils.getAbsoluteURL(rssArticle.origin, rssArticle.link)
-            )
+            analyzeRule.setContent(body)
+                .setBaseUrl(NetworkUtils.getAbsoluteURL(rssArticle.origin, rssArticle.link))
             analyzeRule.getString(ruleContent)
         }
     }

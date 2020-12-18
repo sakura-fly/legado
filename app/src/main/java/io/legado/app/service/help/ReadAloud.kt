@@ -17,8 +17,7 @@ object ReadAloud {
 
     private fun getReadAloudClass(): Class<*> {
         val spId = App.INSTANCE.getPrefLong(PreferKey.speakEngine)
-        httpTTS = App.db.httpTTSDao().get(spId)
-        stop(App.INSTANCE)
+        httpTTS = App.db.httpTTSDao.get(spId)
         return if (httpTTS != null) {
             HttpReadAloudService::class.java
         } else {
@@ -27,6 +26,7 @@ object ReadAloud {
     }
 
     fun upReadAloudClass() {
+        stop(App.INSTANCE)
         aloudClass = getReadAloudClass()
     }
 

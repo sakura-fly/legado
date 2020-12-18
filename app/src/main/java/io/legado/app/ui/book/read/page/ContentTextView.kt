@@ -12,18 +12,20 @@ import io.legado.app.constant.PreferKey
 import io.legado.app.help.ReadBookConfig
 import io.legado.app.lib.theme.accentColor
 import io.legado.app.service.help.ReadBook
-import io.legado.app.ui.book.read.page.entities.TextChar
-import io.legado.app.ui.book.read.page.entities.TextLine
-import io.legado.app.ui.book.read.page.entities.TextPage
+import io.legado.app.ui.book.read.page.entities.*
 import io.legado.app.ui.book.read.page.provider.ChapterProvider
 import io.legado.app.ui.book.read.page.provider.ImageProvider
+import io.legado.app.ui.book.read.page.provider.TextPageFactory
 import io.legado.app.ui.widget.dialog.PhotoDialog
 import io.legado.app.utils.activity
 import io.legado.app.utils.getCompatColor
 import io.legado.app.utils.getPrefBoolean
 import kotlinx.coroutines.CoroutineScope
+import kotlin.math.min
 
-
+/**
+ * 阅读内容界面
+ */
 class ContentTextView(context: Context, attrs: AttributeSet?) : View(context, attrs) {
     var selectAble = context.getPrefBoolean(PreferKey.textSelectAble)
     var upView: ((TextPage) -> Unit)? = null
@@ -37,21 +39,21 @@ class ContentTextView(context: Context, attrs: AttributeSet?) : View(context, at
     private val visibleRect = RectF()
     private val selectStart = arrayOf(0, 0, 0)
     private val selectEnd = arrayOf(0, 0, 0)
-    private var textPage: TextPage = TextPage()
+    private var textChapter: TextChapter? = null
+    var textPage: TextPage = TextPage()
+        private set
 
     //滚动参数
     private val pageFactory: TextPageFactory get() = callBack.pageFactory
-    private val maxScrollOffset = 100f
-    private var pageOffset = 0f
+    private var pageOffset = 0
 
     init {
         callBack = activity as CallBack
-        contentDescription = textPage.text
     }
 
-    fun setContent(textPage: TextPage) {
-        this.textPage = textPage
-        contentDescription = textPage.text
+    fun setContent(pageData: PageData) {
+        this.textChapter = pageData.textChapter
+        this.textPage = pageData.textPage
         invalidate()
     }
 
@@ -85,7 +87,7 @@ class ContentTextView(context: Context, attrs: AttributeSet?) : View(context, at
         textPage.textLines.forEach { textLine ->
             draw(canvas, textLine, relativeOffset)
         }
-        if (!ReadBookConfig.isScroll) return
+        if (!callBack.isScroll) return
         //滚动翻页
         if (!pageFactory.hasNext()) return
         val nextPage = relativePage(1)
@@ -137,7 +139,11 @@ class ContentTextView(context: Context, attrs: AttributeSet?) : View(context, at
         isTitle: Boolean,
         isReadAloud: Boolean,
     ) {
-        val textPaint = if (isTitle) ChapterProvider.titlePaint else ChapterProvider.contentPaint
+        val textPaint = if (isTitle) {
+            textChapter?.titlePaint ?: ChapterProvider.titlePaint
+        } else {
+            textChapter?.contentPaint ?: ChapterProvider.contentPaint
+        }
         textPaint.color =
             if (isReadAloud) context.accentColor else ReadBookConfig.textColor
         textChars.forEach {
@@ -171,36 +177,35 @@ class ContentTextView(context: Context, attrs: AttributeSet?) : View(context, at
     /**
      * 滚动事件
      */
-    fun onScroll(mOffset: Float) {
-        if (mOffset == 0f) return
-        var offset = mOffset
-        if (offset > maxScrollOffset) {
-            offset = maxScrollOffset
-        } else if (offset < -maxScrollOffset) {
-            offset = -maxScrollOffset
-        }
-
-        pageOffset += offset
+    fun scroll(mOffset: Int) {
+        if (mOffset == 0) return
+        pageOffset += mOffset
         if (!pageFactory.hasPrev() && pageOffset > 0) {
-            pageOffset = 0f
-        } else if (!pageFactory.hasNext() && pageOffset < 0) {
-            pageOffset = 0f
+            pageOffset = 0
+        } else if (!pageFactory.hasNext()
+            && pageOffset < 0
+            && pageOffset + textPage.height < ChapterProvider.visibleHeight
+        ) {
+            val offset = (ChapterProvider.visibleHeight - textPage.height).toInt()
+            pageOffset = min(0, offset)
         } else if (pageOffset > 0) {
             pageFactory.moveToPrev(false)
-            textPage = pageFactory.currentPage
-            pageOffset -= textPage.height
+            textPage = pageFactory.curData.textPage
+            pageOffset -= textPage.height.toInt()
             upView?.invoke(textPage)
+            contentDescription = textPage.text
         } else if (pageOffset < -textPage.height) {
-            pageOffset += textPage.height
+            pageOffset += textPage.height.toInt()
             pageFactory.moveToNext(false)
-            textPage = pageFactory.currentPage
+            textPage = pageFactory.curData.textPage
             upView?.invoke(textPage)
+            contentDescription = textPage.text
         }
         invalidate()
     }
 
     fun resetPageOffset() {
-        pageOffset = 0f
+        pageOffset = 0
     }
 
     /**
@@ -218,7 +223,7 @@ class ContentTextView(context: Context, attrs: AttributeSet?) : View(context, at
             relativeOffset = relativeOffset(relativePos)
             if (relativePos > 0) {
                 //滚动翻页
-                if (!ReadBookConfig.isScroll) return
+                if (!callBack.isScroll) return
                 if (relativeOffset >= ChapterProvider.visibleHeight) return
             }
             val page = relativePage(relativePos)
@@ -255,7 +260,7 @@ class ContentTextView(context: Context, attrs: AttributeSet?) : View(context, at
             relativeOffset = relativeOffset(relativePos)
             if (relativePos > 0) {
                 //滚动翻页
-                if (!ReadBookConfig.isScroll) return
+                if (!callBack.isScroll) return
                 if (relativeOffset >= ChapterProvider.visibleHeight) return
             }
             for ((lineIndex, textLine) in relativePage(relativePos).textLines.withIndex()) {
@@ -263,7 +268,10 @@ class ContentTextView(context: Context, attrs: AttributeSet?) : View(context, at
                     for ((charIndex, textChar) in textLine.textChars.withIndex()) {
                         if (x > textChar.start && x < textChar.end) {
                             if (selectStart[0] != relativePos || selectStart[1] != lineIndex || selectStart[2] != charIndex) {
-                                if (selectToInt(relativePos, lineIndex, charIndex) > selectToInt(selectEnd)) {
+                                if (selectToInt(relativePos, lineIndex, charIndex) > selectToInt(
+                                        selectEnd
+                                    )
+                                ) {
                                     return
                                 }
                                 selectStart[0] = relativePos
@@ -295,7 +303,7 @@ class ContentTextView(context: Context, attrs: AttributeSet?) : View(context, at
             relativeOffset = relativeOffset(relativePos)
             if (relativePos > 0) {
                 //滚动翻页
-                if (!ReadBookConfig.isScroll) return
+                if (!callBack.isScroll) return
                 if (relativeOffset >= ChapterProvider.visibleHeight) return
             }
             Log.e("y", "$y")
@@ -306,7 +314,10 @@ class ContentTextView(context: Context, attrs: AttributeSet?) : View(context, at
                         if (x > textChar.start && x < textChar.end) {
                             Log.e("char", "$relativePos  $lineIndex $charIndex")
                             if (selectEnd[0] != relativePos || selectEnd[1] != lineIndex || selectEnd[2] != charIndex) {
-                                if (selectToInt(relativePos, lineIndex, charIndex) < selectToInt(selectStart)) {
+                                if (selectToInt(relativePos, lineIndex, charIndex) < selectToInt(
+                                        selectStart
+                                    )
+                                ) {
                                     return
                                 }
                                 selectEnd[0] = relativePos
@@ -355,7 +366,7 @@ class ContentTextView(context: Context, attrs: AttributeSet?) : View(context, at
     }
 
     private fun upSelectChars() {
-        val last = if (ReadBookConfig.isScroll) 2 else 0
+        val last = if (callBack.isScroll) 2 else 0
         for (relativePos in 0..last) {
             for ((lineIndex, textLine) in relativePage(relativePos).textLines.withIndex()) {
                 for ((charIndex, textChar) in textLine.textChars.withIndex()) {
@@ -394,7 +405,7 @@ class ContentTextView(context: Context, attrs: AttributeSet?) : View(context, at
     }
 
     fun cancelSelect() {
-        val last = if (ReadBookConfig.isScroll) 2 else 0
+        val last = if (callBack.isScroll) 2 else 0
         for (relativePos in 0..last) {
             relativePage(relativePos).textLines.forEach { textLine ->
                 textLine.textChars.forEach {
@@ -475,17 +486,17 @@ class ContentTextView(context: Context, attrs: AttributeSet?) : View(context, at
 
     private fun relativeOffset(relativePos: Int): Float {
         return when (relativePos) {
-            0 -> pageOffset
+            0 -> pageOffset.toFloat()
             1 -> pageOffset + textPage.height
-            else -> pageOffset + textPage.height + pageFactory.nextPage.height
+            else -> pageOffset + textPage.height + pageFactory.nextData.textPage.height
         }
     }
 
     private fun relativePage(relativePos: Int): TextPage {
         return when (relativePos) {
             0 -> textPage
-            1 -> pageFactory.nextPage
-            else -> pageFactory.nextPagePlus
+            1 -> pageFactory.nextData.textPage
+            else -> pageFactory.nextPlusData.textPage
         }
     }
 
@@ -496,5 +507,6 @@ class ContentTextView(context: Context, attrs: AttributeSet?) : View(context, at
         val headerHeight: Int
         val pageFactory: TextPageFactory
         val scope: CoroutineScope
+        val isScroll: Boolean
     }
 }

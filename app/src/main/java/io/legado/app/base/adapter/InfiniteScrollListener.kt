@@ -8,7 +8,8 @@ import androidx.recyclerview.widget.RecyclerView
  *
  * 上拉加载更多
  */
-abstract class InfiniteScrollListener() : RecyclerView.OnScrollListener() {
+@Suppress("unused")
+abstract class InfiniteScrollListener : RecyclerView.OnScrollListener() {
     private val loadMoreRunnable = Runnable { onLoadMore() }
 
     override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {

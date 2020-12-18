@@ -14,7 +14,7 @@ object OldBook {
     fun toNewBook(json: String): List<Book> {
         val books = mutableListOf<Book>()
         val items: List<Map<String, Any>> = Restore.jsonPath.parse(json).read("$")
-        val existingBooks = App.db.bookDao().allBookUrls.toSet()
+        val existingBooks = App.db.bookDao.allBookUrls.toSet()
         for (item in items) {
             val jsonItem = Restore.jsonPath.parse(item)
             val book = Book()
@@ -44,8 +44,8 @@ object OldBook {
             book.latestChapterTitle = jsonItem.readString("$.lastChapterName")
             book.lastCheckCount = jsonItem.readInt("$.newChapters") ?: 0
             book.order = jsonItem.readInt("$.serialNumber") ?: 0
-            book.useReplaceRule = jsonItem.readBool("$.useReplaceRule") == true
             book.variable = jsonItem.readString("$.variable")
+            book.setUseReplaceRule(jsonItem.readBool("$.useReplaceRule") == true)
             books.add(book)
         }
         return books

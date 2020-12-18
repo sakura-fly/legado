@@ -21,12 +21,12 @@ class BookshelfViewModel(application: Application) : BaseViewModel(application) 
             for (url in urls) {
                 val bookUrl = url.trim()
                 if (bookUrl.isEmpty()) continue
-                if (App.db.bookDao().getBook(bookUrl) != null) continue
+                if (App.db.bookDao.getBook(bookUrl) != null) continue
                 val baseUrl = NetworkUtils.getBaseUrl(bookUrl) ?: continue
-                var source = App.db.bookSourceDao().getBookSource(baseUrl)
+                var source = App.db.bookSourceDao.getBookSource(baseUrl)
                 if (source == null) {
                     if (hasBookUrlPattern == null) {
-                        hasBookUrlPattern = App.db.bookSourceDao().hasBookUrlPattern
+                        hasBookUrlPattern = App.db.bookSourceDao.hasBookUrlPattern
                     }
                     hasBookUrlPattern.forEach { bookSource ->
                         if (bookUrl.matches(bookSource.bookUrlPattern!!.toRegex())) {
@@ -43,8 +43,8 @@ class BookshelfViewModel(application: Application) : BaseViewModel(application) 
                     )
                     WebBook(bookSource).getBookInfo(book, this)
                         .onSuccess(IO) {
-                            it.order = App.db.bookDao().maxOrder + 1
-                            App.db.bookDao().insert(it)
+                            it.order = App.db.bookDao.maxOrder + 1
+                            App.db.bookDao.insert(it)
                             successCount++
                         }.onError {
                             throw Exception(it.localizedMessage)
@@ -63,18 +63,16 @@ class BookshelfViewModel(application: Application) : BaseViewModel(application) 
     }
 
     fun checkGroup(groups: List<BookGroup>) {
-        execute {
-            groups.forEach { group ->
-                if (group.groupId and (group.groupId - 1) != 0) {
-                    var id = 1
-                    val idsSum = App.db.bookGroupDao().idsSum
-                    while (id and idsSum != 0) {
-                        id = id.shl(1)
-                    }
-                    App.db.bookGroupDao().delete(group)
-                    App.db.bookGroupDao().insert(group.copy(groupId = id))
-                    App.db.bookDao().upGroup(group.groupId, id)
+        groups.forEach { group ->
+            if (group.groupId >= 0 && group.groupId and (group.groupId - 1) != 0L) {
+                var id = 1L
+                val idsSum = App.db.bookGroupDao.idsSum
+                while (id and idsSum != 0L) {
+                    id = id.shl(1)
                 }
+                App.db.bookGroupDao.delete(group)
+                App.db.bookGroupDao.insert(group.copy(groupId = id))
+                App.db.bookDao.upGroup(group.groupId, id)
             }
         }
     }

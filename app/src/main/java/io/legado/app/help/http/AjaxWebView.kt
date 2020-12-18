@@ -39,7 +39,7 @@ class AjaxWebView {
                     mWebView = createAjaxWebView(params, this)
                 }
                 MSG_SUCCESS -> {
-                    ajaxWebView.callback?.onResult(msg.obj as Res)
+                    ajaxWebView.callback?.onResult(msg.obj as StrResponse)
                     destroyWebView()
                 }
                 MSG_ERROR -> {
@@ -64,11 +64,12 @@ class AjaxWebView {
                 webView.webViewClient = HtmlWebViewClient(params, handler)
             }
             when (params.requestMethod) {
-                RequestMethod.POST -> webView.postUrl(params.url, params.postData)
-                RequestMethod.GET -> webView.loadUrl(
-                    params.url,
-                    params.headerMap
-                )
+                RequestMethod.POST -> params.postData?.let {
+                    webView.postUrl(params.url, it)
+                }
+                RequestMethod.GET -> params.headerMap?.let {
+                    webView.loadUrl(params.url, it)
+                }
             }
             return webView
         }
@@ -159,13 +160,17 @@ class AjaxWebView {
                 if (it.isNotEmpty() && it != "null") {
                     val content = StringEscapeUtils.unescapeJson(it)
                         .replace("^\"|\"$".toRegex(), "")
-                    handler.obtainMessage(MSG_SUCCESS, Res(url, content))
-                        .sendToTarget()
+                    try {
+                        val response = StrResponse(url, content)
+                        handler.obtainMessage(MSG_SUCCESS, response).sendToTarget()
+                    } catch (e: Exception) {
+                        handler.obtainMessage(MSG_ERROR, e).sendToTarget()
+                    }
                     handler.removeCallbacks(this)
                     return@evaluateJavascript
                 }
                 if (retry > 30) {
-                    handler.obtainMessage(MSG_ERROR, Exception("time out"))
+                    handler.obtainMessage(MSG_ERROR, Exception("js执行超时"))
                         .sendToTarget()
                     handler.removeCallbacks(this)
                     return@evaluateJavascript
@@ -185,8 +190,12 @@ class AjaxWebView {
         override fun onLoadResource(view: WebView, url: String) {
             params.sourceRegex?.let {
                 if (url.matches(it.toRegex())) {
-                    handler.obtainMessage(MSG_SUCCESS, Res(view.url ?: params.url, url))
-                        .sendToTarget()
+                    try {
+                        val response = StrResponse(params.url, url)
+                        handler.obtainMessage(MSG_SUCCESS, response).sendToTarget()
+                    } catch (e: Exception) {
+                        handler.obtainMessage(MSG_ERROR, e).sendToTarget()
+                    }
                 }
             }
         }
@@ -225,7 +234,7 @@ class AjaxWebView {
     }
 
     abstract class Callback {
-        abstract fun onResult(response: Res)
+        abstract fun onResult(response: StrResponse)
         abstract fun onError(error: Throwable)
     }
 }

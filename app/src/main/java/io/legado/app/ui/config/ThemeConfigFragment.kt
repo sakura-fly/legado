@@ -12,22 +12,19 @@ import androidx.preference.Preference
 import io.legado.app.App
 import io.legado.app.R
 import io.legado.app.base.BasePreferenceFragment
+import io.legado.app.constant.AppConst
 import io.legado.app.constant.EventBus
 import io.legado.app.constant.PreferKey
+import io.legado.app.databinding.DialogEditTextBinding
 import io.legado.app.help.AppConfig
 import io.legado.app.help.LauncherIconHelp
 import io.legado.app.help.ThemeConfig
 import io.legado.app.lib.dialogs.alert
-import io.legado.app.lib.dialogs.customView
-import io.legado.app.lib.dialogs.noButton
-import io.legado.app.lib.dialogs.okButton
 import io.legado.app.lib.theme.ATH
 import io.legado.app.ui.widget.number.NumberPickerDialog
 import io.legado.app.ui.widget.prefs.ColorPreference
 import io.legado.app.ui.widget.prefs.IconListPreference
-import io.legado.app.ui.widget.text.AutoCompleteTextView
 import io.legado.app.utils.*
-import kotlinx.android.synthetic.main.dialog_edit_text.view.*
 
 
 @Suppress("SameParameterValue")
@@ -136,6 +133,7 @@ class ThemeConfigFragment : BasePreferenceFragment(),
         when (key) {
             PreferKey.launcherIcon -> LauncherIconHelp.changeIcon(getPrefString(key))
             PreferKey.transparentStatusBar -> recreateActivities()
+            PreferKey.immNavigationBar -> recreateActivities()
             PreferKey.cPrimary,
             PreferKey.cAccent,
             PreferKey.cBackground,
@@ -161,8 +159,7 @@ class ThemeConfigFragment : BasePreferenceFragment(),
                 .setMinValue(0)
                 .setValue(AppConfig.elevation)
                 .setCustomButton((R.string.btn_default_s)) {
-                    AppConfig.elevation =
-                        App.INSTANCE.resources.getDimension(R.dimen.design_appbar_elevation).toInt()
+                    AppConfig.elevation = AppConst.sysElevation
                     recreateActivities()
                 }
                 .show {
@@ -177,15 +174,11 @@ class ThemeConfigFragment : BasePreferenceFragment(),
 
     @SuppressLint("InflateParams")
     private fun saveThemeAlert(key: String) {
-        alert("主题名称") {
-            var editText: AutoCompleteTextView? = null
-            customView {
-                layoutInflater.inflate(R.layout.dialog_edit_text, null).apply {
-                    editText = edit_view
-                }
-            }
+        alert(R.string.theme_name) {
+            val alertBinding = DialogEditTextBinding.inflate(layoutInflater)
+            customView = alertBinding.root
             okButton {
-                editText?.text?.toString()?.let { themeName ->
+                alertBinding.editView.text?.toString()?.let { themeName ->
                     when (key) {
                         "saveDayTheme" -> {
                             ThemeConfig.saveDayTheme(requireContext(), themeName)
@@ -196,14 +189,14 @@ class ThemeConfigFragment : BasePreferenceFragment(),
                     }
                 }
             }
-            noButton { }
-        }.show().applyTint()
+            noButton()
+        }.show()
     }
 
     private fun upTheme(isNightTheme: Boolean) {
         if (AppConfig.isNightTheme == isNightTheme) {
             listView.post {
-                App.INSTANCE.applyTheme()
+                ThemeConfig.applyTheme(requireContext())
                 recreateActivities()
             }
         }

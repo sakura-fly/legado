@@ -2,6 +2,7 @@ package io.legado.app.service
 
 import android.content.Intent
 import android.os.Handler
+import android.os.Looper
 import androidx.core.app.NotificationCompat
 import io.legado.app.App
 import io.legado.app.R
@@ -19,7 +20,6 @@ import io.legado.app.help.coroutine.Coroutine
 import io.legado.app.model.webBook.WebBook
 import io.legado.app.service.help.CacheBook
 import io.legado.app.utils.postEvent
-import kotlinx.coroutines.Dispatchers.IO
 import kotlinx.coroutines.asCoroutineDispatcher
 import kotlinx.coroutines.isActive
 import org.jetbrains.anko.toast
@@ -32,7 +32,7 @@ class CacheBookService : BaseService() {
     private var searchPool =
         Executors.newFixedThreadPool(threadCount).asCoroutineDispatcher()
     private var tasks = CompositeCoroutine()
-    private val handler = Handler()
+    private val handler = Handler(Looper.getMainLooper())
     private var runnable: Runnable = Runnable { upDownload() }
     private val bookMap = ConcurrentHashMap<String, Book>()
     private val webBookMap = ConcurrentHashMap<String, WebBook>()
@@ -95,7 +95,7 @@ class CacheBookService : BaseService() {
             synchronized(this) {
                 book = bookMap[bookUrl]
                 if (book == null) {
-                    book = App.db.bookDao().getBook(bookUrl)
+                    book = App.db.bookDao.getBook(bookUrl)
                     if (book == null) {
                         removeDownload(bookUrl)
                     }
@@ -111,7 +111,7 @@ class CacheBookService : BaseService() {
             synchronized(this) {
                 webBook = webBookMap[origin]
                 if (webBook == null) {
-                    App.db.bookSourceDao().getBookSource(origin)?.let {
+                    App.db.bookSourceDao.getBookSource(origin)?.let {
                         webBook = WebBook(it)
                     }
                     if (webBook == null) {
@@ -132,7 +132,7 @@ class CacheBookService : BaseService() {
         }
         downloadCount[bookUrl] = DownloadCount()
         execute {
-            App.db.bookChapterDao().getChapterList(bookUrl, start, end).let {
+            App.db.bookChapterDao.getChapterList(bookUrl, start, end).let {
                 if (it.isNotEmpty()) {
                     val chapters = CopyOnWriteArraySet<BookChapter>()
                     chapters.addAll(it)
@@ -196,8 +196,7 @@ class CacheBookService : BaseService() {
                             CacheBook.addLog("getContentError${it.localizedMessage}")
                             updateNotification("getContentError${it.localizedMessage}")
                         }
-                        .onSuccess(IO) { content ->
-                            BookHelp.saveContent(book, bookChapter, content)
+                        .onSuccess {
                             synchronized(this@CacheBookService) {
                                 downloadCount[book.bookUrl]?.increaseSuccess()
                                 downloadCount[book.bookUrl]?.increaseFinished()
@@ -220,7 +219,7 @@ class CacheBookService : BaseService() {
                                     downloadCount.remove(book.bookUrl)
                                 }
                             }
-                        }.onFinally(IO) {
+                        }.onFinally {
                             postDownloading(true)
                         }
                 } else {
